@@ -14,12 +14,16 @@ export const authActions = {
 function login(username, password, from) {
     return dispatch => {
         dispatch(request({ username }));
-
         authService.login(username, password)
             .then(
                 user => { 
-                    dispatch(success(user));
-                    history.push(from);
+                    if (user.code === 200) {
+                        dispatch(success(user));
+                        history.push('/dashboard#/dashboard');
+                    } else {
+                        dispatch(failure(user.message));
+                        dispatch(alertActions.error(user.message));
+                    }
                 },
                 error => {
                     dispatch(failure(error.toString()));
@@ -44,9 +48,15 @@ function register(user) {
         authService.register(user)
             .then(
                 user => { 
-                    dispatch(success());
-                    history.push('/login');
-                    dispatch(alertActions.success('Registration successful'));
+                    if (user.code === 201) {
+                        dispatch(success());
+                        history.push('/dashboard#/login');
+                        dispatch(alertActions.success(user.message));
+                    }
+                    else {
+                        dispatch(failure())
+                        dispatch(alertActions.error(user.message));
+                    }
                 },
                 error => {
                     dispatch(failure(error.toString()));

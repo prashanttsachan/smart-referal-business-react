@@ -21,9 +21,11 @@ function login(username, password) {
     return fetch(`${config.apiUrl}/auth/login`, requestOptions)
         .then(handleResponse)
         .then(user => {
-            // store user details and jwt token in local storage to keep user logged in between page refreshes
-            localStorage.setItem('user', JSON.stringify(user));
-
+            if (user.code === 200 && user.data.authenticate === true) {
+                console.log("Loggedin successfully")
+                localStorage.setItem('user', JSON.stringify(user.data.user));
+                localStorage.setItem('access_token', JSON.stringify(user.data.access_token));
+            }
             return user;
         });
 }
@@ -31,6 +33,7 @@ function login(username, password) {
 function logout() {
     // remove user from local storage to log user out
     localStorage.removeItem('user');
+    localStorage.removeItem('access_token');
 }
 
 function getAll() {
@@ -83,17 +86,11 @@ function _delete(id) {
 function handleResponse(response) {
     return response.text().then(text => {
         const data = text && JSON.parse(text);
-        if (!response.ok) {
-            if (response.status === 401) {
-                // auto logout if 401 response returned from api
-                logout();
-                window.location.reload()
-            }
-
-            const error = (data && data.message) || response.statusText;
-            return Promise.reject(error);
+        if (response.status === 401) {
+            // auto logout if 401 response returned from api
+            logout();
+            window.location.reload()
         }
-
         return data;
     });
 }
