@@ -38,8 +38,8 @@ const TheHeaderDropdown = () => {
         <CDropdownItem>
           <CIcon name="cil-user" className="mfe-2" />Profile
         </CDropdownItem>
-        <CDropdownItem>
-          <CIcon name="cil-user" className="mfe-2" ></CIcon> <Link to="/change-password">Password</Link>
+        <CDropdownItem to="/change-password">
+          <CIcon name="cil-user" className="mfe-2" ></CIcon> Password
         </CDropdownItem>
         <CDropdownItem>
           <CIcon name="cil-settings" className="mfe-2" />
